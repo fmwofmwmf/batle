@@ -1,8 +1,5 @@
 from mods import *
 
-menu = 0
-menus = {0:menu0, 1:menu1}
-
 def s_menu(m):
     global menu
     if menu == 1:
