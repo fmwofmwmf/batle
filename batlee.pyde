@@ -1,21 +1,6 @@
 from loop import *
 import time
 # img > obj > setting > funs > mods > menus > ctrl > loop > batlee
-def s_menu(m):
-    global menu
-    if menu == 1:
-        eval_grid()
-    if m == 1:
-        del inv['store'][:]
-        for i in range(9):
-            inv['store'].append(button([600 + 70*(i%10), 580, 70, 70], eval('ob'+str(i+1)+'(inter.pos.x,inter.pos.y)'), 'store'))
-    menu = m
-
-
-
-
-menu = 0
-menus = {0:menu0, 1:menu1}
 
 def setup():
     frameRate(60)
