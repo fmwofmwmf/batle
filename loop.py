@@ -1,5 +1,54 @@
 from ctrl import *
+
 spawn = True
+rotation = 0
+d_c = 0
+def render():
+    global d_c, rotation
+    m = 1
+    c = millis()
+    for x in range(len(enemy)):
+        try:
+            enemy[x].render(inter)
+        except:
+            pass
+    
+    inter.render(input)
+    rect(inter.pos.x-20,inter.pos.y+15,40,5)
+    fill(255,0,0)
+    rect(inter.pos.x-20,inter.pos.y+15,map(max(inter.att['h']['H'],0), 0, inter.att['h']['MH'], 0, 40),5)
+    fill(255)
+    
+    if True in [not x.state for x in orbit]:
+        rect(inter.pos.x-20,inter.pos.y-20,40,5)
+        fill(0)
+        rect(inter.pos.x-20, inter.pos.y-20, map(d_c, 0, m, 0, 40),5)
+        fill(255)
+        d_c += 1
+        if d_c >= m:
+            a = orbit[orbit.index([x for x in orbit if not x.state][0])]
+            a.state = True
+            a.pos = inter.pos.copy()
+            a.att['h']['H'] = a.att['h']['MH']
+            d_c = 0
+    
+    for x in drone0:
+        x.render()
+    pushMatrix()
+    for x in orbit:
+        if x.state:
+            x.render(mouse)
+    popMatrix()
+    
+    
+
+    rotation += 2 + input[' ']*4
+    
+    for x in proj:
+        x.render()
+    for x in e_proj:
+        x.render([255,0,0])
+
 def e_loop():
     global w
     if spawn:
@@ -16,46 +65,58 @@ def e_loop():
                 #print(e)
                 for i in range(e[1]):
                     enemy.append(e[0](int(random(2))*1600, random(900)))
+    grid_enemy = {}
+    en_to_grid = {}
+    p = 30
+    for x in enemy:
+        R = (x.pos.x + x.hitbox) // p
+        L = (x.pos.x - x.hitbox) // p
+        D = (x.pos.y + x.hitbox) // p
+        U = (x.pos.y - x.hitbox) // p
+        for i in range(int(L), int(R+1)):
+            for o in range(int(U), int(D+1)):
+                grid_enemy = ad(grid_enemy, str(i)+' '+str(o), [x])
+                en_to_grid[x] = en_to_grid.get(x, []) + [str(i)+' '+str(o)]
     
+    for x in en_to_grid:
+        others = []
+        for y in en_to_grid[x]:
+            others += grid_enemy[y]
+        others = list(set(others))
+        others.remove(x)
+        if others is None:
+            others = []
+        x.walk([[inter.pos.x, inter.pos.y]]+[[u.pos.x, u.pos.y] for u in others], 
+               [lambda v:v]+[lambda v:v.setMag(-sqrt(v.mag())*10)]*len(others))
+        
+        if x.att['id'] in e_shoot:
+            x.shoot(e_proj, PVector(inter.pos.x-x.pos.x, inter.pos.y-x.pos.y))
+        x.move(0.70, factor=lambda e: sqrt(dist(inter.pos.x, inter.pos.y, e.pos.x, e.pos.y))
+                    if dist(inter.pos.x, inter.pos.y, e.pos.x,e.pos.y) > 1000 else 1, max_=True)
+'''
     for x in range(len(enemy)):
-        enemy[x].walk([[inter.pos.x, inter.pos.y]])
-        if enemy[x].att['id'] in e_shoot:
-            enemy[x].shoot(e_proj, PVector(inter.pos.x-enemy[x].pos.x, inter.pos.y-enemy[x].pos.y))
-        enemy[x].render(inter)
-
-d_c = 0
+        #try:        
+            enemy[x].walk([[inter.pos.x, inter.pos.y]])
+            if enemy[x].att['id'] in e_shoot:
+                enemy[x].shoot(e_proj, PVector(inter.pos.x-enemy[x].pos.x, inter.pos.y-enemy[x].pos.y))
+            enemy[x].move(0.70, factor=lambda e: sqrt(dist(inter.pos.x, inter.pos.y, e.pos.x,e.pos.y))
+                           if dist(inter.pos.x, inter.pos.y, e.pos.x,e.pos.y) > 1000 else 1, max_=True)
+            #print enemy[x].pos.copy().sub(inter.pos)
+        #except:
+                #pass    
+'''
 def inter_loop():
-    m = 60
-    global d_c
+    inter.move(0.97)
     for t in collide([inter], enemy, 40):
         #print(t[0].health)
         try:
             if t[0].hmod(t[1].att['dmg']['contact']) is not None:
-                print('losed')
+                print t[0].att['h']['H']
             if t[1].hmod(t[0].att['dmg']['contact']) is not None:
                 enemy.pop(enemy.index(t[1]))
         except:
             pass
-    
-    inter.render(input)
-    rect(inter.pos.x-20,inter.pos.y+15,40,5)
-    fill(255,0,0)
-    rect(inter.pos.x-20,inter.pos.y+15,map(inter.att['h']['H'], 0, inter.att['h']['MH'], 0, 40),5)
-    fill(255)
-    # print([type(x) for x in orbit])
-    if True in [not x.state for x in orbit]:
-        rect(inter.pos.x-20,inter.pos.y-20,40,5)
-        fill(0)
-        rect(inter.pos.x-20,inter.pos.y-20,map(d_c, 0, m, 0, 40),5)
-        fill(255)
-        d_c += 1
-        if d_c >= m:
-            a = orbit[orbit.index([x for x in orbit if not x.state][0])]
-            a.state = True
-            a.pos = inter.pos.copy()
-            a.att['h']['H'] = a.att['h']['MH']
-            d_c = 0
-            
+
     for t in collide(drone0, enemy, 20000):
         # print(t[0].health)
         try:
@@ -65,15 +126,8 @@ def inter_loop():
                 enemy.pop(enemy.index(t[1]))
         except:
             pass
-    
-    
-    for x in drone0:
-        x.render()
 
-rotation = 0
 def ob_loop():
-    global rotation
-    c=millis()
     for t in collide(orbit, enemy, 40):
         # print(t[0].health)
         try:
@@ -83,31 +137,23 @@ def ob_loop():
                 enemy.pop(enemy.index(t[1]))
         except:
             pass
-
+    
+    for x in orbit:
+        x.move(0.70)
     
     orbit_types = {}
     for x in orbit:
         ad(orbit_types, (x if type(x) == str else x.att['id']), [x])
 
     m = 10
-    pushMatrix()
     for y, x in enumerate(sorted([x for x in orbit_types], key = lambda x: len(orbit_types[x]))):
         s = len(orbit_types[x])
-        # print s, max(y*20, s*PI), inter.pos.x, inter.pos.y, (rotation%360)
         p = cirl(s, max(m+20, s*PI), inter.pos.x, inter.pos.y, (rotation/sqrt(max(m+20, s*PI)/10))%360)
         m = max(m+20, s*PI)
         
         for i in range(s):
-            circle(p[i][0]%width, p[i][1]%height, 5)
-            if orbit_types[x][i].state:
-                orbit_types[x][i].walk([[p[i][0]%width, p[i][1]%height]])
-                orbit_types[x][i].render(mouse)
-    popMatrix()
-        
-    rotation += 2 + input[' ']*4
-    
-    
-        
+            # orbit_types[x][i].walk([[p[i][0]%width, p[i][1]%height]]) # TORUS
+            orbit_types[x][i].walk([[p[i][0], p[i][1]]]) # NORMAL
 
 def proj_loop():
     decay = []
@@ -132,18 +178,12 @@ def proj_loop():
                 elif t[0] in drone0:
                     drone0.pop(drone0.index(t[1]))
                 else:
-                    print('losed')
-            
+                    print t[0].att['h']['H']
         except:
             pass
     for x in proj+e_proj:
-        if x in e_proj:
-            x.render([255,0,0])
-        else:
-            x.render()
-        d = x.collision()
-        if d is not None:
-            decay.append(d)
+        if x.collision() is not None:
+            decay.append(x)
     for x in decay:
         try:
             proj.pop(proj.index(x))

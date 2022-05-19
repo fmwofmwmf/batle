@@ -18,17 +18,19 @@ class Ob(thingy):
         super(Ob, self).__init__(speed, x, y, s, att)
 
     def walk(self, targets, weights=None):
-        x, y = 0, 0
-        for u in targets:
-                x+=u[0]
-                y+=u[1]
-        t = PVector(x/len(targets), y/len(targets))
-        t.sub(self.pos)
-        if abs(t.x)*2 > width:
-            t.x=-t.x
-        if abs(t.y)*2 > height:
-            t.y=-t.y
-        t.limit(self.speed)
+        t = PVector(0, 0)
+        for i in range(len(targets)):
+            if weights is None:
+                t.add(PVector(targets[i][0]-self.pos.x, targets[i][1]-self.pos.y))
+            else:
+                u = PVector(targets[i][0]-self.pos.x, targets[i][1]-self.pos.y)
+                u = weights[i](u)
+                t.add(u)
+        # TORUS
+        #if abs(t.x)*2 > width:
+        #    t.x=-t.x
+        #if abs(t.y)*2 > height:
+        #    t.y=-t.y
         self.v.add(t)
     
     def hmod(self, d):
@@ -40,6 +42,7 @@ class Ob(thingy):
             self.att['h']['H'] -= max(d*(1-self.att['h'].get('DR%', 0))-self.att['h'].get('DRF',0), 0)
         
         if self.att['h']['H']<=0:
+            self.att['h']['H']=0
             return self
         return None
     
@@ -48,11 +51,20 @@ class Ob(thingy):
             p.append(self.att['dmg']['b'](self.pos.x, self.pos.y, d, self.att['dmg']['bd']))
             self.att['dmg']['c']=self.att['dmg']['CD']
             
-    def move(self, ease=0):
+    def move(self, ease=0, factor=None, max_=False):
+        
         self.v.mult(ease)
-        self.v.limit(self.speed)
+        if factor is not None:
+            f = factor(self)
+        else:
+            f = 1
+        if max_:
+            self.v.mult(self.speed*f)
+        self.v.limit(self.speed*f)
+        
         self.pos.add(self.v)
-        self.pos = PVector(self.pos.x%width, self.pos.y%height)
+        #self.pos = PVector(self.pos.x%1600, self.pos.y%900) # TORUS
+        
         if 'c' in self.att['dmg'] and self.att['dmg']['c']>0:
             self.att['dmg']['c']-=1
         
@@ -119,11 +131,14 @@ class NotCircle(Ob):
 class Shoot(thingy):
     def __init__(self, speed, x, y, v, s=3, att={'dmg':{}, 'bhv':{}, 'age':{'max':0, 'a':1}, 'g':None, 'id':''}):
         super(Shoot, self).__init__(speed, x, y, s, att)
+        
         self.v = v
         self.v.normalize()
         self.v.mult(speed)
 
     def collision(self):
+        if self.att['age']['a'] <= 5 and len(proj) > 350 and self in proj:
+            proj.remove(self)
         if self.att['age']['a']>=self.att['age']['max']:
             return self
         return None
@@ -170,6 +185,7 @@ class Shoot(thingy):
 class Enemy(Ob):
     def __init__(self, speed, x, y, s=10, att={}):
         super(Enemy, self).__init__(speed, x, y, s, att)
+        self.target=None
     
     def collision(self):
         pass
@@ -185,7 +201,7 @@ class Main(Ob):
         self.v.limit(self.speed)
         self.v.mult(ease)
         self.pos.add(self.v)
-        self.pos = PVector(self.pos.x%width, self.pos.y%height)
+        #self.pos = PVector(self.pos.x%width, self.pos.y%height) # TORUS
         for x in self.weapons:
             if self.weapons[x] is not None:
                 self.weapons[x][1][1]-=1

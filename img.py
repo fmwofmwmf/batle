@@ -1,3 +1,4 @@
+import glo as g
 orbit = []
 drone0 = []
 enemy = []
@@ -32,8 +33,16 @@ def o5():
     #rect(-5, -10, 10, 20)
     quad(5,10,-5,10,-8,-10,8,-10)
 
+def o6():
+    quad(5,10,-5,10,-8,-10,8,-10)
+def o7():
+    quad(5,10,-5,10,-8,-10,8,-10)
+def o8():
+    quad(5,10,-5,10,-8,-10,8,-10)
+def o9():
+    quad(5,10,-5,10,-8,-10,8,-10)
 graphics = {}
-for i in range(6):
+for i in range(10):
         graphics['o'+str(i)] = eval('o'+str(i))
 #################################
 

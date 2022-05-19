@@ -1,4 +1,5 @@
 from setting import *
+
 def prog_bar(x, y, w, h, p, pmax):
     rect(x, y, w, h)
     fill(0)
@@ -19,7 +20,7 @@ def prog_box(x, y, l, e, s, w, h, c=color(255, 0, 0, 200)):
     
 def drones(a):
     if a:
-        orbit.append(eval('ob'+str(selected)+'(inter.pos.x, inter.pos.y)'))
+        orbit.append(eval('ob'+str(g.selected)+'(inter.pos.x, inter.pos.y)'))
     else:
         for x in orbit:
             try:
@@ -29,10 +30,8 @@ def drones(a):
             except:
                 pass
                 
-selected = 1
 def select(s):
-    global selected
-    selected = s
+    g.selected = s
 
 def ad(di, keyy, ele):
     if keyy in di:
@@ -61,13 +60,13 @@ def collide(a, b, p):
     # print(len(a+b), 'comp(1)')
     for x in a+b:
         if x is not None and x.state:
-                R = (x.pos.x + x.hitbox) // p
-                L = (x.pos.x - x.hitbox) // p
-                D = (x.pos.y + x.hitbox) // p
-                U = (x.pos.y - x.hitbox) // p
-                for i in range(int(L), int(R+1)):
-                    for o in range(int(U), int(D+1)):
-                        col = ad(col, str(i)+' '+str(o), [x])
+            R = (x.pos.x + x.hitbox) // p
+            L = (x.pos.x - x.hitbox) // p
+            D = (x.pos.y + x.hitbox) // p
+            U = (x.pos.y - x.hitbox) // p
+            for i in range(int(L), int(R+1)):
+                for o in range(int(U), int(D+1)):
+                    col = ad(col, str(i)+' '+str(o), [x])
     
     for x in col:
         if len(col[x])>1:
@@ -87,6 +86,44 @@ def collide(a, b, p):
                         break
     return ov
 
+t1 = 0
+t11 = 0
+lag_q = [False]*10
+lag_rep = {'bullets':0, 'l': [0,0,0,0,0,0], 'fps':[17]*300, 'ifps':[17]*300}
+
+def lagg():
+    fill(255,100)
+    rect(0,600,300,340)
+    rect(30,630,240,90)
+    fill(255,0,0)
+    stroke(255,0,0)
+    text(200, 5, 640)
+    text(60, 10, 700)
+    for x in range(1,10):
+        s = 1000/(sum(lag_rep['fps'][30*x:30*(x+1)])/30)
+        s0 = 1000/(sum(lag_rep['fps'][30*(x-1):30*(x)])/30)
+        line(7+26*x, 720+map(s0, 0, 220, 0, -90), 33+26*x, 720+map(s, 0, 220, 0, -90))
+    line(33, 720+map(60, 0, 220, 0, -90), 267, 720+map(60, 0, 220, 0, -90))
+    fill(0,0,255)
+    stroke(0,0,255)
+    text(70, 275, 640)
+    sample = 20
+    for x in range(1,sample):
+        s = 1000/(sum(lag_rep['ifps'][(300/sample)*x:(300/sample)*(x+1)])/(300/sample))
+        s0 = 1000/(sum(lag_rep['ifps'][(300/sample)*(x-1):(300/sample)*(x)])/(300/sample))
+        line(7+(260/sample)*x, 720+map(s0, 0, 70, 0, -90), 7+(260/sample)*(x+1), 720+map(s, 0, 70, 0, -90))
+    stroke(0)
+    fill(0)
+    text ('[fps] {}'.format(1000/(sum(lag_rep['fps'][240:])/60)), 50, 620)
+    text ('[ifps] {}'.format(1000/(sum(lag_rep['ifps'][240:])/60)), 110, 620)
+    text ('[bullets] {}'.format(lag_rep['bullets']), 170, 620)
+    text ('[SLEEP] {}'.format(lag_rep['l'][0]), 20, 740)
+    text ('[DRONE] {}'.format(lag_rep['l'][1]), 100, 740)
+    text ('[MAIN] {}'.format(lag_rep['l'][2] - lag_rep['l'][1]), 20, 760)
+    text ('[ENEMY] {}'.format(lag_rep['l'][3] - lag_rep['l'][2]), 100, 760)
+    text ('[PROJ] {}'.format(lag_rep['l'][4] - lag_rep['l'][3]), 20, 780)
+    fill(255)
+    
 def laser_ren(ob, s):
     ob.att['age']['a']+=1
     if ob.att['age']['a'] >= ob.att['age']['max']:
