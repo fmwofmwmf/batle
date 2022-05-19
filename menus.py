@@ -52,7 +52,7 @@ class button():
             self.g(*pos)
         else:
             rect(*pos)
-            if self.id == 'store' and inv['store'].index(self) == grid_page:
+            if self.id == 'store' and inv['store'].index(self) == grid_page-1:
                 rect(pos[0]+5, pos[1]+5, pos[2]-10, pos[3]-10)
         if self.c != None:
             pushMatrix()
@@ -84,22 +84,23 @@ class button():
 
 inv = {'grid':[], 'inv':[], 'storage':[], 'store':[], 'sell':[]}
 m=[None]*3
-grid_page = 0
+grid_page = 1
 grid_s = [5,5]
 
 def menu1_setup():
     for x in range(5):
         inv['inv'].append(button([25+100*x, 50, 50, 50], None, 'inv'))
+        
     for o in range(9):
-        inv['grid'+str(o)] = []
-        for i, x in enumerate(orbit+[None]*(grid_s[0]*grid_s[1]-len(orbit))):
-            inv['grid'+str(o)].append(button([620 + 60*(i%grid_s[0]), 120+60*(i/grid_s[0]), 60, 60], 
-                            x, 'grid'+str(o), switch))
+        inv['grid'+str(o+1)] = []
+        for i in range(grid_s[0]*grid_s[1]):
+            inv['grid'+str(o+1)].append(button([620 + 60*(i%grid_s[0]), 120+60*(i/grid_s[0]), 60, 60], 
+                            None, 'grid'+str(o+1), switch))
     
     for i in range(9):
             inv['store'].append(button([600 + 70*(i%10), 580, 70, 70], 
-                                       eval('ob'+str(i+1)+'(inter.pos.x,inter.pos.y)'), 'store',
-                                        fun=lambda a=i:switch_grid(a)))
+                                       eval('ob'+str(i)+'(inter.pos.x,inter.pos.y)'), 'store',
+                                        fun=lambda a=i:switch_grid(a+1)))
             
     inv['sell'].append(button([1230, 580, 70, 70], None, 'bin', graphic=bin_g))
     
@@ -121,12 +122,12 @@ def resize_grid(x, y):
     for o in range(9):
         for yy in range(grid_s[1]):
             for i in range(x):
-                inv['grid'+str(o)].insert(int((grid_s[0]+x)*(yy+1)+i-x), button([620 + 60*(grid_s[0]+i)
-                                                  ,120+60*yy, 60, 60], None, 'grid'+str(o), switch))
+                inv['grid'+str(o+1)].insert(int((grid_s[0]+x)*(yy+1)+i-x), button([620 + 60*(grid_s[0]+i)
+                                                  ,120+60*yy, 60, 60], None, 'grid'+str(o+1), switch))
         for xx in range(y):
             for i in range(grid_s[0]+x):
-                inv['grid'+str(o)].append(button([620 + 60*i, 120+60*(grid_s[1]+xx), 60, 60], 
-                            None, 'grid'+str(o), switch))
+                inv['grid'+str(o+1)].append(button([620 + 60*i, 120+60*(grid_s[1]+xx), 60, 60], 
+                            None, 'grid'+str(o+1), switch))
     grid_s[0] += x
     grid_s[1] += y
             
@@ -194,7 +195,8 @@ menus = {0:menu0, 1:menu1}
 def s_menu(m):
     if g.menu == 1:
         del orbit[:]
-        parse(inv['grid0'], grid_s, ob1, orbit)
+        for i in range(9):
+            parse(inv['grid'+str(i+1)], grid_s, eval('ob'+str(i+1)), orbit)
     if m == 1:
         pass
         

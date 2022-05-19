@@ -68,6 +68,7 @@ def parse(grid, dim, ob, li):
         if x.c is not None:
             ev[c([i%dim[0], i//dim[0]])] = x
             #print i, c([i%dim[0], i//dim[0]]), x.c.att['name']
+            print x.c
             if x.c.att['name'] == 's':
                 s.append(x)
     
