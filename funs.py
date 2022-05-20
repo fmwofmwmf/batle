@@ -148,3 +148,8 @@ def laser_ren(ob, s):
         strokeWeight(1)
     stroke(0)
     popMatrix()
+    
+def laser_track(ob):
+    ob.pos = inter.pos
+    ob.dim[2] = inter.rot
+    pass
