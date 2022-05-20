@@ -8,8 +8,8 @@ def setup():
     inter.weapons['CENTER']=[proj, [lambda x,y,v: Shoot(15, x, y, v, s=20, 
                         att={'age':{'max':300, 'a':1}, 'dmg':{'P':100, 'contact':200}, 'g':w1, 'bhv':{}}), 0, 60]]
     inter.weapons['RIGHT']=[drone0, [lambda x,y,v: NotCircle(0, x, y, s=20, 
-                        att={'age':{'max':60, 'a':1},'h':{'H':1000000, 'MH':1000000}, 'dmg':{'P':100, 'contact':0, 'max':120}, 'g':w1, 'bhv':{}},
-                         dim=[50,600,inter.rot], coll=coll_rect, ren=laser_ren, stor=drone0), 0, 30]]
+                        att={'age':{'max':60, 'a':1},'h':{'H':1000000, 'MH':1000000}, 'dmg':{'P':100, 'contact':0, 'max':240}, 'g':w1, 'bhv':{}},
+                         dim=[50,1850,inter.rot], coll=coll_rect, ren=laser_ren, stor=drone0, funs=[laser_track]), 0, 30]]
     orbit.append(ob0(0,0))
     menu1_setup()
     global b
