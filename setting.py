@@ -94,12 +94,12 @@ em6 = lambda x,y,h=1: Enemy(0.1, x, y, s=10, att={'h':{'H':10000*h, 'MH':10000*h
                                     'age':{'max':1500, 'a':1},
                                     'g':None, 'id':'', 'bhv':{}}),
                                     'bd':1, 'c':0, 'CD':800}, 'id':'e6', 'g':e4})
-em1b = lambda x,y,h=1: Enemy(0.02, x, y, s=150, att={'h':{'H':60000000*h, 'MH':60000000*h, 'R':-10, 'S':'BAR'}, 'dmg':{'contact':200, 'b':
-                                    lambda x,y,v,a=1: Shoot(1, x, y, v, s=10, att = {
-                                    'dmg':{'P':15, 'contact':100},
+em1b = lambda x,y,h=1: Enemy(0.5, x, y, s=150, att={'h':{'H':600000000*h, 'MH':600000000*h, 'R':0, 'S':'BAR'}, 'dmg':{'contact':200, 'b':
+                                    lambda x,y,v,a=1: Shoot(5, x, y, v, s=10, att = {
+                                    'dmg':{'P':15, 'contact':500},
                                     'age':{'max':1500, 'a':1},
                                     'g':None, 'id':'', 'bhv':{}}),
-                                    'bd':1, 'c':0, 'CD':800}, 'id':'e6', 'g':e1b})
+                                    'bd':1, 'c':0, 'CD':20}, 'id':'e6', 'g':e1b})
 
 w = 0
 
