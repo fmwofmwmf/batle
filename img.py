@@ -73,19 +73,55 @@ def e4():
     square(-5,-5,10)
     
 def e1b():
-    r = 150
+    r = 150.0
+    rh = 150.0
+    ra = r*cos(30.0*PI/180)
+    ro = r*sin(30.0*PI/180)
+    cd1 = 100.0
+    cd2 = 50.0
+    cr3 = 33.0
+    c2dr = 1.0/2.0 # secondary circle distance ratios, of hexagon radius, from center (e.g. 1/3 means it is placed 1/3 of distance from center to edge of hexagon)
+    c3dr = 4.0/5.0 # tertiary circle distance ratios, of hexagon radius, from center (e.g. 1/3 means it is placed 1/3 of distance from center to edge of hexagon)
+
     fill(255)
     beginShape()
     vertex(0,-r)
-    vertex(r*cos(30*PI/180),-r*sin(30*PI/180))
-    vertex(r*cos(30*PI/180),r*sin(30*PI/180))
+    vertex(ra,-ro)
+    vertex(ra,ro)
     vertex(0,r)
-    vertex(-r*cos(30*PI/180),r*sin(30*PI/180))
-    vertex(-r*cos(30*PI/180),-r*sin(30*PI/180))
+    vertex(-ra,ro)
+    vertex(-ra,-ro)
     vertex(0,-r)
     endShape()
-    circle(0,0,50)
     
+    fill(255)
+    beginShape()
+    vertex(0,-(cd1+cd2)/2)
+    vertex((cd1+cd2)/2*ra/r,-(cd1+cd2)/2*ro/r)
+    vertex((cd1+cd2)/2*ra/r,(cd1+cd2)/2*ro/r)
+    vertex(0,(cd1+cd2)/2)
+    vertex(-(cd1+cd2)/2*ra/r,(cd1+cd2)/2*ro/r)
+    vertex(-(cd1+cd2)/2*ra/r,-(cd1+cd2)/2*ro/r)
+    vertex(0,-(cd1+cd2)/2)
+    endShape()
+    
+    
+
+    circle(0,-r*c2dr,cd2)
+    circle(0,r*c2dr,cd2)
+    circle(ra*c2dr,-ro*c2dr, cd2)
+    circle(ra*c2dr, ro*c2dr, cd2)
+    circle(-ra*c2dr, ro*c2dr, cd2)
+    circle(-ra*c2dr, -ro*c2dr, cd2)
+    
+    circle(0,-r*c3dr,cr3)
+    circle(0,r*c3dr,cr3)
+    circle(ra*c3dr,-ro*c3dr, cr3)
+    circle(ra*c3dr, ro*c3dr, cr3)
+    circle(-ra*c3dr, ro*c3dr, cr3)
+    circle(-ra*c3dr, -ro*c3dr, cr3)
+    
+    circle(0,0,cd1)
 
 #################################
 def b3():
