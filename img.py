@@ -5,6 +5,17 @@ enemy = []
 proj = []
 e_proj = []
 
+# https://processing.org/examples/regularpolygon.html haha i morburglarized the code
+def poly(x, y, r, n):
+    angle = TWO_PI/n
+    beginShape()
+    for i in range(0,TWO_PI,angle):
+        sx = x + cos(i)*r
+        sy = y + sin(i)*r
+        vertex(sx, sy)
+    endShape(CLOSE)
+    
+
 def o0():
     triangle(0, 10, 5, -10, -5, -10)
 
@@ -60,6 +71,21 @@ def e3():
 def e4():
     square(-15,-15,30)
     square(-5,-5,10)
+    
+def e1b():
+    r = 150
+    fill(255)
+    beginShape()
+    vertex(0,-r)
+    vertex(r*cos(30*PI/180),-r*sin(30*PI/180))
+    vertex(r*cos(30*PI/180),r*sin(30*PI/180))
+    vertex(0,r)
+    vertex(-r*cos(30*PI/180),r*sin(30*PI/180))
+    vertex(-r*cos(30*PI/180),-r*sin(30*PI/180))
+    vertex(0,-r)
+    endShape()
+    circle(0,0,50)
+    
 
 #################################
 def b3():
